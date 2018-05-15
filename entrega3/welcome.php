@@ -1,11 +1,19 @@
+<!DOCTYPE html>
 <html>
-<body>
+<head>
 
-$uid = $_POST["UserID"];
-$email = $_POST["email"];
+// LOGIN
 
-Welcome <?php echo $uid; ?><br>
-Your email address is: <?php echo $email; ?>
+<form action="login.php" method="post">
+UserID: <input type="text" name="uid"><br>
+Password: <input type="text" name="password"><br>
+<input type="submit">
+</form>
 
-</body>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
+
+    </div>
+  </body>
 </html>

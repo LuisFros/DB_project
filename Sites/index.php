@@ -11,6 +11,7 @@
   <body style="background-color: #eb7260; font-family: sans-serif; font-weight: lighter;">
   	<?php 
       include_once "consultas/psql-config.php";
+
       try {
         $db = new PDO("pgsql:dbname=".DATABASE.";host=".HOST.";port=".PORT.";user=".USER.";password=".PASSWORD);
         }
@@ -18,6 +19,17 @@
         echo $e->getMessage();
         }
 
+        // LOGIN
+        $username = $password;
+
+		<form action="login.php" method="post">
+		UserID: <input type="text" name="uid"><br>
+		Password: <input type="text" name="password"><br>
+		<input type="submit">
+		</form>
+
+
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////
         $query_users = 'SELECT uid, nombre, apellido FROM Usuario;';
 
         $result_users = $db -> prepare($query_users);

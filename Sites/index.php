@@ -18,18 +18,6 @@
         catch(PDOException $e) {
         echo $e->getMessage();
         }
-
-        // LOGIN
-        $username = $password;
-
-		<form action="login.php" method="post">
-		UserID: <input type="text" name="uid"><br>
-		Password: <input type="text" name="password"><br>
-		<input type="submit">
-		</form>
-
-
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////
         $query_users = 'SELECT uid, nombre, apellido FROM Usuario;';
 
         $result_users = $db -> prepare($query_users);

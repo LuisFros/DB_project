@@ -1,0 +1,98 @@
+/*Dado un usuario y un dia, liste todas
+ las transacciones de un usuario en ese dia*/
+Select * 
+From Transaccion
+Where Transaccion.fecha = 2018-01-10
+AND from_id = 17
+
+#2018-01-10 13:52:43
+#id = 17
+
+/*Dado un dia y una cantidad 
+de zorzales, entregue la
+ equivalencia en pesos y en dolares
+de esa moneda.*/
+
+Select tipo, cambio
+From preciohistorico
+Where preciohistorico.fecha::date = '2018-01-05'
+
+
+Dado un usuario, muestre su ultima
+transaccion
+
+Select *
+From Transaccion
+Where from_id = 17
+Order By fecha Desc
+limit 1
+
+
+Muestre el precio
+promedio de los zorzales en el mes pasado
+
+Select AVG(cambio)
+From preciohistorico
+Where  fecha < CURRENT_TIMESTAMP
+AND fecha  > (CURRENT_TIMESTAMP - INTERVAL '30 days' - INTERVAL )
+Group By tipo
+
+
+
+Muestre el precio
+promedio de los zorzales en el mes pasado
+
+Select AVG(cambio)
+From preciohistorico
+Where  date_trunc('month', fecha::date) = date_trunc('month', NOW()) - '1 month'::interval
+Group By tipo
+
+
+
+
+
+fecha  > CURRENT_TIMESTAMP - INTERVAL '30 days'
+and
+(extract(month 
+	from timestamp preciohistorico.fecha)) 
+
+
+
+Indique cual dia del mes pasado recibio la mayor cantidad de transacciones
+Select extract(DAY from fecha::date), Count(*)
+From transaccion
+Where  date_trunc('month', fecha::date) = date_trunc('month', NOW()) - '1 month'::interval
+Group By fecha::date
+
+
+
+
+
+
+
+y en cual
+dıa se transo mayor cantidad de zorzales
+
+
+
+
+Dado un usuario, calcule la cantidad de zorzales que posee.
+
+Select Sum(B.a)
+From (SELECT Sum(cantidad) as a
+From Transaccion
+Where to_id = 2
+UNION
+Select Sum(-cantidad) as a
+From Transaccion
+Where from_id = 2) As B
+
+
+Select Sum(cantidad) as a
+From Transaccion
+Where to_id = 1
+UNION
+Select Sum(-cantidad) as a
+From Transaccion
+Where from_id = 2;
+	

@@ -1,0 +1,9 @@
+SELECT * FROM
+              (SELECT AVG(value) as USD
+              FROM zorzalcoin
+              WHERE currency_type='USD' AND date >= date_trunc('month', current_date - interval '1 month')
+                AND date < date_trunc('month', current_date)) AS USD_TABLE,
+              (SELECT AVG(value) AS CLP
+              FROM zorzalcoin
+              WHERE currency_type='CLP' AND date >= date_trunc('month', current_date - interval '1 month')
+                AND date < date_trunc('month', current_date))AS CLP_TABLE;

@@ -1,7 +1,7 @@
 <html>
 <body>
 	<?php
-echo $_POST['username']
+echo $_POST['uid']
 ?>
 </body>
 </html>

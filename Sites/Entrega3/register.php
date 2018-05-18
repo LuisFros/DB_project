@@ -51,7 +51,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
           }
     // Check input errors before inserting in database
     if(empty($username_err) && empty($password_err) && empty($confirm_password_err)){
-      $param_password = password_hash($password, PASSWORD_DEFAULT);
+      $param_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
       $param_username = $username;
         // Prepare an insert statement
         if ($searchresult !== false){

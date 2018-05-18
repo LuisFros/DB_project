@@ -1,6 +1,12 @@
 <?php
 // Include config file
 require_once 'config.php';
+try {
+  $db = new PDO("pgsql:dbname=".DATABASE.";host=".HOST.";port=".PORT.";user=".USER.";password=".PASSWORD);
+  }
+  catch(PDOException $e) {
+  echo $e->getMessage();
+  }
 
 // Define variables and initialize with empty values
 $username = $password = "";
@@ -26,52 +32,68 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     // Validate credentials
     if(empty($username_err) && empty($password_err)){
         // Prepare a select statement
-        $sql = "SELECT username, password FROM users WHERE username = ?";
 
-        if($stmt = mysqli_prepare($link, $sql)){
-            // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "s", $param_username);
+        $param_username = $_POST["username"];
+        $query= "SELECT usuarios.username FROM usuarios WHERE usuarios.username = '$param_username';";
+        $searchresult = $db->query($query);
+        $row = $searchresult->fetch();
 
+        if (!is_bool($row)) {
+          $param_username = $_POST["username"];
+          $query= "SELECT usuarios.password FROM usuarios WHERE usuarios.username = '$param_username';";
+          $searchresult = $db->query($query);
+          $row = $searchresult->fetch(PDO::FETCH_ASSOC);
+
+          if(password_verify($_POST['password'],$row['password'])){
+            echo $hashed_password;
+            echo "Usuario encontrado";
+
+          } else { echo "Usuario no encontradp o contraseña incorrecta";
+          echo $_POST['password']; }
+        }
+//        if($stmt = mysqli_prepare($link, $sql)){
+//            // Bind variables to the prepared statement as parameters
+//            mysqli_stmt_bind_param($stmt, "s", $param_username);
+//
             // Set parameters
-            $param_username = $username;
+//            $param_username = $username;
 
             // Attempt to execute the prepared statement
-            if(mysqli_stmt_execute($stmt)){
+//            if(mysqli_stmt_execute($stmt)){
                 // Store result
-                mysqli_stmt_store_result($stmt);
+//                mysqli_stmt_store_result($stmt);
 
                 // Check if username exists, if yes then verify password
-                if(mysqli_stmt_num_rows($stmt) == 1){
+//                if(mysqli_stmt_num_rows($stmt) == 1){
                     // Bind result variables
-                    mysqli_stmt_bind_result($stmt, $username, $hashed_password);
-                    if(mysqli_stmt_fetch($stmt)){
-                        if(password_verify($password, $hashed_password)){
+//                    mysqli_stmt_bind_result($stmt, $username, $hashed_password);
+//                    if(mysqli_stmt_fetch($stmt)){
+//                        if(password_verify($password, $hashed_password)){
                             /* Password is correct, so start a new session and
                             save the username to the session */
-                            session_start();
-                            $_SESSION['username'] = $username;
-                            header("location: welcome.php");
-                        } else{
-                            // Display an error message if password is not valid
-                            $password_err = 'The password you entered was not valid.';
-                        }
-                    }
-                } else{
-                    // Display an error message if username doesn't exist
-                    $username_err = 'No account found with that username.';
-                }
-            } else{
-                echo "Oops! Something went wrong. Please try again later.";
-            }
+//                            session_start();
+//                            $_SESSION['username'] = $username;
+//                            header("location: welcome.php");
+//                        } else{
+//                            // Display an error message if password is not valid
+//                            $password_err = 'The password you entered was not valid.';
+//                        }
+//                    }
+//                } else{
+//                    // Display an error message if username doesn't exist
+//                    $username_err = 'No account found with that username.';
+//                }
+//            } else{
+//                echo "Oops! Something went wrong. Please try again later.";
+//            }
         }
 
         // Close statement
-        mysqli_stmt_close($stmt);
+//        mysqli_stmt_close($stmt);
     }
 
     // Close connection
-    mysqli_close($link);
-}
+//    mysqli_close($link);
 ?>
 
 <!DOCTYPE html>

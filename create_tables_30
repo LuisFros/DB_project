@@ -1,5 +1,5 @@
 CREATE TABLE Transacciones(tid SERIAL PRIMARY KEY,in_id  int,out_id int,tdate date,value REAL);
-CREATE TABLE PreciosHistoricos(currency_type varchar(3), value REAL,phdate date PRIMARY  KEY);
+CREATE TABLE zorzalcoin(currency_type varchar(3), value REAL,phdate date PRIMARY  KEY);
 CREATE TABLE Users(id serial PRIMARY KEY,name varchar(255),phone int,country varchar(255),sexo VARCHAR(255),username VARCHAR(255),password VARCHAR(255));
 CREATE TABLE Exchange(eid SERIAL PRIMARY KEY,buy_id int, sell_id int, usd REAL,clp REAL,edate date);
 

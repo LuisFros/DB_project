@@ -1,0 +1,2 @@
+Login adaptado de:
+https://www.tutorialrepublic.com/php-tutorial/php-mysql-login-system.php

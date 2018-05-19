@@ -1,0 +1,14 @@
+body {
+  background-color: LimeGreen;
+  color: black;
+  padding-left: 
+  padding-left: 90px;
+  padding-right: 90px;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+h1{
+	font-size: 4em;
+	align-self: center;
+}

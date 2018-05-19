@@ -17,52 +17,39 @@
         catch(PDOException $e) {
         echo $e->getMessage();
         }
-
         $query_users = 'SELECT uid, nombre, apellido FROM Usuario;';
-
         $result_users = $db -> prepare($query_users);
         $result_users -> execute();
         $usuarios = $result_users -> fetchAll();
-
         $options_usuarios = "";
         foreach ($usuarios as $usuario) {
             $options_usuarios = $options_usuarios . "<option value=" . $usuario[0] . ">" . $usuario[1] . " " . $usuario[2] . "</option>";
         }
-
         $query_countries = 'SELECT DISTINCT pais FROM Usuario;';
-
         $result_countries = $db -> prepare($query_countries);
         $result_countries -> execute();
         $countries = $result_countries -> fetchAll();
-
         $options_countries = "";
         foreach ($countries as $country) {
             $options_countries = $options_countries . "<option>" . $country[0] . "</option>";
         }
-
         $query_tipo_de_cambio = "SELECT cambio FROM PrecioHistorico ORDER BY Fecha DESC LIMIT 2;";
-
         $result = $db -> prepare($query_tipo_de_cambio);
         $result -> execute();
         $usd = $result -> fetch();
         $clp = $result -> fetch();
-
         $query_cantidad_transacciones = "SELECT COUNT(*) FROM Transaccion;";
         $query_cantidad_usuarios = "SELECT COUNT(*) FROM Usuario;";
         $query_dias = "SELECT COUNT(*)/2 FROM PrecioHistorico;";
-
         $result = $db -> prepare($query_cantidad_transacciones);
         $result -> execute();
         $cantidad_transacciones = $result -> fetch();
-
         $result = $db -> prepare($query_cantidad_usuarios);
         $result -> execute();
         $cantidad_usuarios = $result -> fetch();
-
         $result = $db -> prepare($query_dias);
         $result -> execute();
         $dias = $result -> fetch();
-
         $table = "<table class='table'> <tr><th>Valor en Peso Chileno (CLP)</th><td>CLP\$$" . number_format($clp[0], 0, ',', '.') . "</td></tr> <tr><th>Valor en Dolar Americano (USD)</th><td>USD\$" . number_format($usd[0], 2, ',', '.') . "</td></tr> <tr><th>Usuarios totales</th><td>$cantidad_usuarios[0]</td></tr> <tr><th>Transacciones totales</th><td>$cantidad_transacciones[0]</td></tr> <tr><th>Dias desde nacimiento del Zorzal</th><td>$dias[0]</td></tr></table>";
   	?>
     <header>

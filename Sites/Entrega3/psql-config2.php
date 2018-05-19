@@ -1,0 +1,14 @@
+<?php
+define("HOST2","localhost");
+define("USER2","grupo30");
+define("PORT2","5432");
+define("PASSWORD2","grupo30");
+define("DATABASE2","grupo30");
+define("MONGO_DATABASE2",'test');
+/*
+/*
+define("cursos",'cursos');
+define("universidades",'universidades');
+define("alumnos",'alumnos');
+*/
+?>

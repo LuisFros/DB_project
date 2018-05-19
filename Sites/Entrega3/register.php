@@ -1,8 +1,8 @@
 <?php
 // Include config file
-require_once 'config.php';
+require_once 'psql-config2.php';
 try {
-  $db = new PDO("pgsql:dbname=".DATABASE.";host=".HOST.";port=".PORT.";user=".USER.";password=".PASSWORD);
+  $db = new PDO("pgsql:dbname=".DATABASE2.";host=".HOST2.";port=".PORT2.";user=".USER2.";password=".PASSWORD2);
   }
   catch(PDOException $e) {
   echo $e->getMessage();

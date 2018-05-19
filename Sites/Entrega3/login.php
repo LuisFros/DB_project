@@ -1,8 +1,16 @@
 <?php
+
 // Include config file
-require_once 'config.php';
+require_once 'psql-config2.php';
 try {
-  $db = new PDO("pgsql:dbname=".DATABASE.";host=".HOST.";port=".PORT.";user=".USER.";password=".PASSWORD);
+  $db30 = new PDO("pgsql:dbname=".DATABASE2.";host=".HOST2.";port=".PORT2.";user=".USER2.";password=".PASSWORD2);
+  }
+  catch(PDOException $e) {
+  echo $e->getMessage();
+  }
+  require_once 'psql-config.php';
+try {
+  $db1 = new PDO("pgsql:dbname=".DATABASE.";host=".HOST.";port=".PORT.";user=".USER.";password=".PASSWORD);
   }
   catch(PDOException $e) {
   echo $e->getMessage();
@@ -14,7 +22,6 @@ $username_err = $password_err = "";
 
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
-
     // Check if username is empty
     if(empty(trim($_POST["username"]))){
         $username_err = 'Please enter username.';
@@ -32,24 +39,35 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     // Validate credentials
     if(empty($username_err) && empty($password_err)){
         // Prepare a select statement
-
         $param_username = $_POST["username"];
         $query= "SELECT usuarios.username FROM usuarios WHERE usuarios.username = '$param_username';";
-        $searchresult = $db->query($query);
+        $searchresult = $db30->query($query);
         $row = $searchresult->fetch();
+
+        //$query= "SELECT usuario.nombre FROM usuario WHERE usuario.nombre = '$param_username';";
+        $query1= "SELECT usuario.email FROM usuario WHERE usuario.email= '$param_username@uc.cl';";
+        $searchresult1 = $db1->query($query1);
+        $row1 = $searchresult1->fetch();
 
         if (!is_bool($row)) {
           $param_username = $_POST["username"];
           $query= "SELECT usuarios.password FROM usuarios WHERE usuarios.username = '$param_username';";
-          $searchresult = $db->query($query);
+          $searchresult = $db30->query($query);
           $row = $searchresult->fetch(PDO::FETCH_ASSOC);
 
           if(password_verify($_POST['password'],$row['password'])){
-            echo $hashed_password;
-            echo "Usuario encontrado";
+            session_start();
+            $_SESSION['username'] = $param_username;
+            header("location:welcome.php");
+          }
+        }elseif(!is_bool($row1)){
+            $param_username = $_POST["username"];
+            session_start();
+            $_SESSION['username'] = $param_username;
+            header("location:nopassword.php");
+          }
 
-          } else { echo "Usuario no encontradp o contraseña incorrecta";
-          echo $_POST['password']; }
+           else { echo "Usuario no encontrado o contraseña incorrecta"; }
         }
 //        if($stmt = mysqli_prepare($link, $sql)){
 //            // Bind variables to the prepared statement as parameters
@@ -90,7 +108,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
         // Close statement
 //        mysqli_stmt_close($stmt);
-    }
 
     // Close connection
 //    mysqli_close($link);

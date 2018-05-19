@@ -1,4 +1,6 @@
 CREATE TABLE Users(id SERIAL PRIMARY KEY, username VARCHAR(255), name varchar(255), phone int, country varchar(255), sexo VARCHAR(255), password VARCHAR(255));
 CREATE TABLE Exchange(e_id SERIAL PRIMARY KEY, id_buy int, id_sell int, quantity REAL, currency_type varchar(3), date date);
+
 CREATE TABLE Zorzalcoin(date date, currency_type varchar(3), value REAL, PRIMARY KEY(date, currency_type));
+
 CREATE TABLE Transaccion(tid SERIAL PRIMARY KEY, date date, id_out int, id_in int, quantity REAL);

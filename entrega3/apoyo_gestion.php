@@ -16,15 +16,29 @@
 	        echo $e->getMessage();
 	    }
 
-	   	$totals = 'SELECT * FROM qty_cash_total()';
-	    $result = $db_g1 -> prepare($totals);
+	    // transacciones totales grupo1
+	   	$totals_g1 = 'SELECT * FROM qty_cash_total(1)';
+	    $result = $db_g1 -> prepare($totals_g1);
 	    $result -> execute();
-	    $totals = $result -> fetch();
+	    $totals_g1 = $result -> fetch();
 
-	   	$by_month = 'SELECT * FROM qty_cash_by_month()';
-	    $result = $db_g1 -> prepare($by_month);
+	    // transacciones totales grupo30
+	   	$totals_g30 = 'SELECT * FROM qty_cash_total(30)';
+	    $result = $db_g30 -> prepare($totals_g30);
 	    $result -> execute();
-	    $by_month = $result -> fetchAll();
+	    $totals_g30 = $result -> fetch();
+
+	    // transacciones por mes grupo1
+	   	$by_month_g1 = 'SELECT * FROM qty_cash_by_month(1)';
+	    $result = $db_g1 -> prepare($by_month_g1);
+	    $result -> execute();
+	    $by_month_g1 = $result -> fetchAll();
+
+	    // transacciones por mes grupo30
+	   	$by_month_g30 = 'SELECT * FROM qty_cash_by_month(30)';
+	    $result = $db_g30 -> prepare($by_month_g30);
+	    $result -> execute();
+	    $by_month_g30 = $result -> fetchAll();
 	?>
     <body>
     	<h1> Apoyo a la gestión </h1>
@@ -34,8 +48,8 @@
     			<th>$ total</th>
     		</tr>
     		<tr>
-    			<td><?php echo $totals[0] ?></td>
-    			<td><?php echo $totals[1] ?></td>
+    			<td><?php echo ($totals_g1[0] + $totals_g30[0]) ?></td>
+    			<td><?php echo ($totals_g1[1] + $totals_g30[1]) ?></td>
     		</tr>
     	</table>
 
@@ -46,7 +60,7 @@
     			<th>$ total</th>
     		</tr>
     		<?php 
-    			foreach($by_month as $month) {
+    			foreach($by_month_g1 as $month) {
     				echo "<tr>";
 	    				echo "<td>" . $month[0] . "</td>";
 	    				echo "<td>" . $month[1] . "</td>";

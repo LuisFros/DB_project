@@ -59,12 +59,14 @@
     			<th>Q total</th>
     			<th>$ total</th>
     		</tr>
-    		<?php 
-    			foreach($by_month_g1 as $month) {
+    		<?php
+    			foreach(array_map(null, $by_month_g1, $by_month_g30) as $pair) {
+    				$month_g1 = $pair[0];
+    				$month_g30 = $pair[1];
     				echo "<tr>";
-	    				echo "<td>" . $month[0] . "</td>";
-	    				echo "<td>" . $month[1] . "</td>";
-	    				echo "<td>" . $month[2] . "</td>";
+	    				echo "<td>" . $month_g1[0] . "</td>";
+	    				echo "<td>" . ($month_g1[1] + $month_g30[1]) . "</td>";
+	    				echo "<td>" . ($month_g1[2] + $month_g30[2]) . "</td>";
     				echo "</tr>";
     			}
     		?>

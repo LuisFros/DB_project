@@ -61,6 +61,7 @@ BEGIN
 
 	RETURN QUERY SELECT * FROM aux_table;
 	DROP TABLE aux_table;
+	RETURN;	
 END
 $$ LANGUAGE plpgsql;
 

@@ -17,41 +17,46 @@
 	    }
 
 	    // transacciones totales grupo1
-	    $result = $db_g1 -> prepare('SELECT * FROM qty_cash_total(1)');
+	    $result = $db_g1 -> prepare('SELECT * FROM total_transactions()');
 	    $result -> execute();
 	    $totals_g1 = $result -> fetch();
 
 	    // transacciones totales grupo30
-	    $result = $db_g30 -> prepare('SELECT * FROM qty_cash_total(30)');
+	    $result = $db_g30 -> prepare('SELECT * FROM total_transactions');
 	    $result -> execute();
 	    $totals_g30 = $result -> fetch();
 
-	    // transacciones por mes grupo1
-	    $result = $db_g1 -> prepare('SELECT * FROM qty_cash_by_month(1)');
-	    $result -> execute();
-	    $by_month_g1 = $result -> fetchAll();
+	    $by_month_data = array();
 
-	    // transacciones por mes grupo30
-	    $result = $db_g30 -> prepare('SELECT * FROM qty_cash_by_month(30)');
-	    $result -> execute();
-	    $by_month_g30 = $result -> fetchAll();
+	    // transacciones por mes
+	    for ($mes=1; $mes < 13; $mes++) { 
+	    	$g1 = $db_g1 -> prepare("SELECT * FROM month_transactions(" . $mes . ")");
+	    	$g30 = $db_g30 -> prepare("SELECT * FROM month_transactions(" . $mes . ")");
+
+	    	$g1 -> execute();
+	    	$g30 -> execute();
+
+	    	$by_month_g1 = $g1 -> fetch();
+	    	$by_month_g30 = $g30 -> fetch();
+
+	    	array_push($by_month_data, array($mes, $by_month_g1[0] + $by_month_g30[0], $by_month_g1[1] + $by_month_g30[1]));
+	    }
 
 	    // estadisticas
-	    $result = $db_g1 -> prepare('SELECT * FROM all_balances(1)');
-	    $result -> execute();
-	    $balances_g1 = $result -> fetchAll();
-
-	    $result = $db_g30 -> prepare('SELECT * FROM all_balances(30)');
-	    $result -> execute();
-	    $balances_g30 = $result -> fetchAll();
-
+	    $balances_g1 = $db_g1 -> query('SELECT * FROM all_balances()');
+	    $balances_g30 = $db_g30 -> query('SELECT * FROM all_balances()');
 
 	    $query_subroutine = array('CREATE TABLE aux_table(id integer, balance real);');
-	    foreach($balances_g1 as $balance) {
-	    	array_push($query_subroutine, 'INSERT INTO aux_table VALUES (' . $balance[0] . ', ' . $balance[1] . ');');
+	    $len = 0;
+
+	    while ($row = $balances_g1 -> fetch(PDO::FETCH_ASSOC)) {
+	    	array_push($query_subroutine, 'INSERT INTO aux_table VALUES (' . $row["id"] . ', ' . $row["balance"] . ');');
+	    	$len += 1;
 	    }
-	  	foreach($balances_g30 as $balance) {
-	    	array_push($query_subroutine, 'INSERT INTO aux_table VALUES (' . $balance[0] . ', ' . $balance[1] . ');');
+
+	  	while($row = $balances_g30 -> fetch(PDO::FETCH_ASSOC)) {
+	    	array_push($query_subroutine, 'INSERT INTO aux_table VALUES (' . $row["id"] . ', ' . $row["balance"] . ');');
+	    	$len += 1;
 	    }
 
 	    foreach($query_subroutine as $query) {
@@ -59,26 +64,36 @@
 	    	$result -> execute();
 	    }
 
-	    $result = $db_g1 -> prepare('SELECT * FROM aux_table ORDER BY balance;');
-	    $result -> execute();
-	    $balances_global = $result -> fetchAll();
+	    // mediana
+	    $median_calc = $db_g1 -> query('SELECT * FROM aux_table ORDER BY balance;');
 
+	    if ($len % 2 != 0) {
+	    	$target = array(floor($len / 2) + 1);
+	    } else {
+	    	$target = array(floor($len / 2), floor($len / 2) + 1);
+	    }
+
+	    $cont = 0;
+	    $median = 0;
+	    while ($row = $median_calc -> fetch(PDO::FETCH_ASSOC)) {
+	    	$cont += 1;
+	    	if ($cont == $target[0]) {
+	    		$median = $row["balance"];
+	    		if (sizeof($target) == 2) {
+	    			$row = $median_calc -> fetch(PDO::FETCH_ASSOC);
+	    			$median += $row["balance"];
+	    			$median /= 2;
+	    		}
+	    	}
+	    }
+
+	    // resto de resultados
 	    $result = $db_g1 -> prepare('SELECT MIN(balance), MAX(balance), AVG(balance), stddev(balance) FROM aux_table;');
 	    $result -> execute();
 	    $stats = $result -> fetch();
 
-	    $len = sizeof($balances_global);
-	    if ($len % 2 == 0) {
-	    	$median = ($balances_global[floor($len/2) - 1][1] + $balances_global[floor($len/2)][1]) / 2;
-	    } else {
-	    	$median = $balances_global[$len/2][1];
-	    }
-
-	    array_push($stats, $median);
-
-		$result = $db_g1 -> prepare('DROP TABLE aux_table');
-	    $result -> execute();
-
+	    $result = $db_g1 -> prepare('DROP TABLE aux_table;');
+	    $result -> execute();	    
 	?>
     <body>
     	<h1> Apoyo a la gestión </h1>
@@ -100,13 +115,11 @@
     			<th>$ total</th>
     		</tr>
     		<?php
-    			foreach(array_map(null, $by_month_g1, $by_month_g30) as $pair) {
-    				$month_g1 = $pair[0];
-    				$month_g30 = $pair[1];
+    			foreach($by_month_data as $data) {
     				echo "<tr>";
-	    				echo "<td>" . $month_g1[0] . "</td>";
-	    				echo "<td>" . ($month_g1[1] + $month_g30[1]) . "</td>";
-	    				echo "<td>" . ($month_g1[2] + $month_g30[2]) . "</td>";
+	    				echo "<td>" . $data[0] . "</td>";
+	    				echo "<td>" . $data[1] . "</td>";
+	    				echo "<td>" . $data[2] . "</td>";
     				echo "</tr>";
     			}
     		?>
@@ -125,6 +138,8 @@
 	    			foreach(array_unique($stats) as $stat) {
 	    				echo "<td>" . number_format($stat, 2) . "</td>";
 	    			}
+
+	    			echo "<td>" . number_format($median, 2) . "</td>";
 	    		?>
 	    	</tr>
     	</table>
